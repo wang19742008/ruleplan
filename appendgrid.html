@@ -1,0 +1,467 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link href="./css/jquery-ui-1.10.3.custom.min.css" rel="stylesheet"/>
+<link href="./css/jquery.appendGrid-1.4.1.css" rel="stylesheet"/>
+<script type="text/javascript" src="./js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="./js/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" src="./js/jquery.appendGrid-1.4.1.js"></script>
+<style type="text/css">
+.ui-widget-content {
+border:0;
+background: #eee url(images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x;
+color: #333;
+}
+</style>
+<script type="text/javascript">
+	var cfgData = [
+    {
+        "rule": "taobaoUser",
+        "params": [
+            {
+                "value": "true",
+                "percent": "100",
+                "target": {
+                    "rule": "taobaoUser",
+                    "params": [
+                        {
+                            "value": "true",
+                            "percent": "100",
+                            "target": {
+                                "rule": "taobaoUser",
+                                "params": [
+                                    {
+                                        "value": "true",
+                                        "percent": "100",
+                                        "target": "0"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "rule": "allUser",
+        "params": [
+            {
+                "value": "true",
+                "percent": "100",
+                "target": "0"
+            }
+        ]
+    }
+];
+	
+	var ruleList = {
+		"rules": [
+			{
+				"name": "taobaoUser",
+				"text": "淘宝用户",
+				"values": [
+					{
+						"name": "true",
+						"text": "是"
+					},
+					{
+						"name": "false",
+						"text": "否"
+					}
+				]
+			},
+			{
+				"name": "mediaType",
+				"text": "媒体类型",
+				"values": [
+					{
+						"name": "video",
+						"text": "视频"
+					},
+					{
+						"name": "other",
+						"text": "其他"
+					}
+				]
+			},
+			{
+				"name": "allUser",
+				"text": "所有用户",
+				"values": [
+					{
+						"name": "true",
+						"text": "是"
+					}
+				]
+			},
+			{
+				"name": "pri",
+				"text": "权限",
+				"values": [
+					{
+						"name": "cpc",
+						"text": "CPC"
+					},
+					{
+						"name": "cpm",
+						"text": "CPM"
+					},{
+						"name": "cps",
+						"text": "CPS"
+					}
+				]
+			},
+			{
+				"name": "res",
+				"text": "资源类型",
+				"values": [
+					{
+						"name": "all",
+						"text": "ALL"
+					},
+					{
+						"name": "app",
+						"text": "APP"
+					},{
+						"name": "ecom",
+						"text": "ECOM"
+					}
+				]
+			}
+		],
+		"targets": []
+	};
+	
+    $(function () {
+        $('#tblAppendGrid').appendGrid({
+			caption: 'test',
+			initRows: 1,
+			columns: getGridCols(),
+			hideButtons: {
+				remove: true,
+				removeLast: true,
+				insert: true,
+				moveUp: true,
+				moveDown: true,
+				append: true
+			},
+			dataLoaded: function(caller){
+				procAllRow();
+			}
+		});
+    });
+
+	//列定义
+	function getGridCols(){
+		var cols = [];
+		//规则列
+		var ruleCol = { name: 'rule', display: '条件', type: 'custom'};
+		ruleCol.customBuilder = function (parent, idPrefix, name, uniqueIndex) {
+			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
+			var ctrl = document.createElement('span');
+			$(ctrl).attr({ id: ctrlId, name: ctrlId }).css({'margin-right':'30px'}).appendTo(parent);
+			
+			var select = $('<select>', { id: ctrlId + '_rule' });
+			select.append('<option value="">请选择</option>');
+			$.each(ruleList.rules,function(i,d){
+				select.append('<option value="'+d.name+'">' + d.text +'</option>');
+			});
+			select.css({'width':'200px'}).appendTo(ctrl);
+			
+			select.bind('change',function(){
+				var id = idPrefix + '_val_' + uniqueIndex + '_val';
+				var selVal = $('#'+ id);
+				selVal.empty();
+				$.each(ruleList.rules,function(i,d){
+					if(d.name == select.val()){
+						$.each(d.values,function(i2,d2){
+							selVal.append('<option value="' + d2.name +'">' + d2.text + '</option>');
+						});
+					}
+				});
+			});
+			return ctrl;
+		};
+		ruleCol.customGetter = function (idPrefix, name, uniqueIndex) {
+			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
+			var rt = $('#' + ctrlId + '_rule').val();
+			return rt;
+		};
+		ruleCol.customSetter = function (idPrefix, name, uniqueIndex, value) {
+			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
+			$('#' + ctrlId + '_rule').val(value);
+			$('#' + ctrlId + '_rule').change();
+		};
+		
+		//值列
+		var valCol = { name: 'val', display: '值', type: 'custom'};
+		valCol.customBuilder = function (parent, idPrefix, name, uniqueIndex) {
+			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
+			var ctrl = document.createElement('span');
+			$(ctrl).attr({ id: ctrlId, name: ctrlId }).css({'margin-right':'30px'}).appendTo(parent);
+			
+			var select = $('<select>', { id: ctrlId + '_val' });
+			select.css('width', '150px').appendTo(ctrl);
+			return ctrl;
+		};
+		valCol.customGetter = function (idPrefix, name, uniqueIndex) {
+			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
+			var rt = $('#' + ctrlId + '_val').val();
+			return rt;
+		};
+		valCol.customSetter = function (idPrefix, name, uniqueIndex, value) {
+			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
+			$('#' + ctrlId + '_val').val(value);
+		};
+		
+		//操作列
+		var opCol = { name: 'op', display: '操作', type: 'custom'};
+		opCol.customBuilder = function (parent, idPrefix, name, uniqueIndex) {
+			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
+			var ctrl = document.createElement('span');
+			$(ctrl).attr({ id: ctrlId, name: ctrlId }).appendTo(parent);
+			var btnAdd = $('<input>', { type: 'button',id: ctrlId + '_add',value: '+'});
+			var btnDel = $('<input>', { type: 'button',id: ctrlId + '_del', value: '-'});
+			btnAdd.css({'width':'30px','margin':'0 5px 0 5px'}).appendTo(ctrl);
+			btnDel.css({'width':'30px','margin':'0 5px 0 5px'}).appendTo(ctrl);
+			
+			btnAdd.bind('click',function(){
+				addRowValue(getRowIndex(uniqueIndex));
+			});
+			btnDel.bind('click',function(){
+				//$('#tblAppendGrid').appendGrid('removeRow', $('#tblAppendGrid').appendGrid('getRowIndex', uniqueIndex));
+				delRow(uniqueIndex);
+			});
+			return ctrl;
+		};
+		
+		cols.push(ruleCol);
+		cols.push(valCol);
+		cols.push({ name: 'trf', display: '流量(%)', type: 'text',  value:100 ,ctrlAttr: { maxlength: 4 }, ctrlCss: { width: '50px'} });
+		cols.push({ name: 'target', display: '结果', type: 'select', ctrlOptions: getRuleTarget(), 
+					onChange: function (evt, rowIndex) {
+						var v = getCtrlValue('target', rowIndex);
+						if(v == '_sub'){
+							addRowSubRule(rowIndex);
+						}
+					}
+				});
+		cols.push({ name: 'prid', type: 'hidden', value: -1 });
+		cols.push({ name: 'rid', type: 'hidden', value: 1 });
+		cols.push(opCol);
+		return cols;
+	}
+	function procAllRow(){
+		var count =  $('#tblAppendGrid').appendGrid('getRowCount');
+		for(var i=0;i<count;i++){
+			procRow(i);
+		}
+	}
+	function procRow(inx){
+		if(inx == 0){
+			return;
+		}
+		var preElem = getCellCtrl('rule', inx-1);
+		var preRule = getCtrlValue('rule', inx-1);
+		var prid = getCtrlValue('prid', inx);
+		var preTarget = getCtrlValue('target', inx-1);
+		
+		var elem = getCellCtrl('rule', inx);
+		var leftBlank = $(preElem).css('margin-left')?$(preElem).css('margin-left').replace('px',''):'0';
+		if(preTarget == '_sub'){
+			leftBlank = parseInt(leftBlank) + 50;
+			var uniqueInx = getUniqueIndex(inx-1);
+			$('#tblAppendGrid_op_'+uniqueInx+'_add').hide();
+		}else if(prid == -1){
+			leftBlank = '0';
+		}
+		$(elem).css('margin-left', leftBlank+'px');
+		
+		var preVal = getCtrlValue('rule', inx-1);
+		var curVal = getCtrlValue('rule', inx);
+		if(preVal && preVal == curVal){
+			var ctrlId = 'tblAppendGrid_rule_'+getUniqueIndex(inx)+'_rule';
+			//$('#' + ctrlId).attr('disabled','disabled');
+			$('#' + ctrlId).hide();
+		}
+	}
+	function getRuleTarget(){
+		return { "0": 'H5', "1": '店铺', "2": 'Tanx', "3": '外投外', "_sub": '子规则'};
+	}
+	
+	function addRow(){
+		var newInx =  $('#tblAppendGrid').appendGrid('getRowCount');
+		$('#tblAppendGrid').appendGrid('insertRow', 1, newInx);
+		setCtrlValue('prid', newInx, '-1');
+		setCtrlValue('rid', newInx, getUniqueIndex(newInx));
+		procRow(newInx);
+	}
+	function addRowValue(inx){
+		var newInx = inx+1;
+		$('#tblAppendGrid').appendGrid('insertRow', 1, newInx);
+		var preRule = getCtrlValue('rule', inx);
+		var prePrid = getCtrlValue('prid', inx);
+		setCtrlValue('rule', newInx, preRule);
+
+		setCtrlValue('prid', newInx, prePrid);
+		setCtrlValue('rid', newInx, getUniqueIndex(newInx));
+		procRow(newInx);
+	}
+	function addRowSubRule(inx){
+		var newInx = inx+1;
+		$('#tblAppendGrid').appendGrid('insertRow', 1, newInx);
+		setCtrlValue('prid', newInx, getUniqueIndex(inx));
+		setCtrlValue('rid', newInx, getUniqueIndex(newInx));
+		procRow(newInx);
+	}
+	function delRow(uniqueIndex){
+		$('#tblAppendGrid').appendGrid('removeRow', $('#tblAppendGrid').appendGrid('getRowIndex', uniqueIndex));
+		var count =  $('#tblAppendGrid').appendGrid('getRowCount');
+		for(var i=0;i<count;i++){
+			if(getCtrlValue('prid',i) == uniqueIndex){
+				$('#tblAppendGrid').appendGrid('removeRow', i);
+			}
+		}
+	}
+	function getUniqueIndex(inx){
+		return $('#tblAppendGrid').appendGrid('getUniqueIndex', inx);
+	}
+	function getRowIndex(uniqueIndex){
+		return $('#tblAppendGrid').appendGrid('getRowIndex', uniqueIndex);
+	}
+	function getCellCtrl(colName, inx){
+		return $('#tblAppendGrid').appendGrid('getCellCtrl', colName, inx);
+	}
+	function setCtrlValue(colName, inx, value){
+		$('#tblAppendGrid').appendGrid('setCtrlValue', colName, inx, value);
+	}
+	function getCtrlValue(colName, inx){
+		return $('#tblAppendGrid').appendGrid('getCtrlValue', colName, inx);
+	}
+	
+	function getvalue(){
+		var result = [];
+		var json = $('#tblAppendGrid').appendGrid('getAllValue');
+		var tmp = [];
+		//console.log(JSON.stringify(json));
+		
+		for(var i=0;i<json.length;i++){
+			var item = json[i];
+			if(item.prid != '-1'){
+				var t = findItem(tmp,item.prid);
+				if(t){
+					if(typeof(t.target) == 'string'){
+						t.target = [];
+					}
+					t.target.push(item);
+				}
+			}else{
+				tmp.push(item);
+			}
+		}
+		//console.log(JSON.stringify(tmp));
+		for(var j=0;j<tmp.length;j++){
+			var o = {};
+			o.value = tmp[j].val;
+			o.percent = tmp[j].trf;
+			o.target = buildTarget(tmp[j].target);
+			if(j>0 && tmp[j-1].rule == tmp[j].rule){
+				result[result.length-1].params.push(o);
+			}else{
+				var rc = {};
+				rc.rule = tmp[j].rule;
+				rc.params = [];
+				rc.params.push(o);
+				result.push(rc);
+			}
+		}
+		console.log(JSON.stringify(result));
+		return result;
+	}
+	
+	function findItem(json, rid){
+		if(isArray(json)){
+			for(var i=0;i<json.length;i++){
+				if(json[i].rid == rid){
+					return json[i];
+				}
+				if(isArray(json[i].target)){
+					var r = findItem(json[i].target,rid);
+					if(r){
+						return r;
+					}
+				}
+			}
+		}else{
+			if(json.rid == rid){
+				return json;
+			}
+		}
+		return null;
+	}
+	
+	function buildTarget(arr){
+		if(!isArray(arr)){
+			return arr;
+		}
+		var rt = {};
+		rt.rule = arr[0].rule;
+		rt.params = [];
+		for(var i=0;i<arr.length;i++){
+			var p = {};
+			p.value = arr[i].val;
+			p.percent = arr[i].trf;
+			if(isArray(arr[i].target)){
+				p.target = buildTarget(arr[i].target);
+			}else{
+				p.target = arr[i].target;
+			}
+			rt.params.push(p);
+		}
+		return rt;
+	}
+	
+	function isArray(arg){
+	  return Object.prototype.toString.call(arg) === '[object Array]';
+	}
+	
+	function add(){
+		addRow();
+	}
+	function load(){
+		var rt = [];
+		$.each(cfgData, function(i, d){
+			loadConfig(d,-1,rt);
+		});
+		console.log(JSON.stringify(rt));
+		$('#tblAppendGrid').appendGrid('load',rt);
+	}
+	function loadConfig(json, prid, set){
+		$.each(json.params, function(i, d){
+			var rt = {};
+			rt.rule = json.rule;
+			rt.rid = set.length+1;
+			rt.val = d.value;
+			rt.trf = d.percent;
+			rt.prid = prid;
+			if(typeof d.target === 'object'){
+				rt.target = '_sub';
+				set.push(rt);
+				loadConfig(d.target,rt.rid, set)
+			}else{
+				rt.target = d.target;
+				set.push(rt);
+			}
+			
+		});
+	}
+</script>
+</head>
+<body>
+	<input type='button' value='value' onclick='getvalue()'/>
+	<input type='button' value='add' onclick='add()'/>
+	<input type='button' value='load' onclick='load()'/>
+    <table id="tblAppendGrid"></table>
+</body>
+</html>
