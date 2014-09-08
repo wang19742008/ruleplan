@@ -14,46 +14,7 @@ color: #333;
 }
 </style>
 <script type="text/javascript">
-	var cfgData = [
-    {
-        "rule": "taobaoUser",
-        "params": [
-            {
-                "value": "true",
-                "percent": "100",
-                "target": {
-                    "rule": "taobaoUser",
-                    "params": [
-                        {
-                            "value": "true",
-                            "percent": "100",
-                            "target": {
-                                "rule": "taobaoUser",
-                                "params": [
-                                    {
-                                        "value": "true",
-                                        "percent": "100",
-                                        "target": "0"
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            }
-        ]
-    },
-    {
-        "rule": "allUser",
-        "params": [
-            {
-                "value": "true",
-                "percent": "100",
-                "target": "0"
-            }
-        ]
-    }
-];
+	var cfgData = [{"rule":"mediaType","params":[{"value":"other","percent":"100","target":"0"},{"value":"video","percent":"100","target":{"rule":"taobaoUser","params":[{"value":"true,false,","percent":"100","target":"0"}]}}]}] ;
 	
 	var ruleList = {
 		"rules": [
@@ -75,6 +36,7 @@ color: #333;
 			{
 				"name": "mediaType",
 				"text": "媒体类型",
+				"vtype": "select",
 				"values": [
 					{
 						"name": "video",
@@ -89,6 +51,7 @@ color: #333;
 			{
 				"name": "allUser",
 				"text": "所有用户",
+				"vtype": "select",
 				"values": [
 					{
 						"name": "true",
@@ -99,6 +62,7 @@ color: #333;
 			{
 				"name": "pri",
 				"text": "权限",
+				"vtype": "select",
 				"values": [
 					{
 						"name": "cpc",
@@ -116,6 +80,7 @@ color: #333;
 			{
 				"name": "res",
 				"text": "资源类型",
+				"vtype": "select",
 				"values": [
 					{
 						"name": "all",
@@ -171,6 +136,26 @@ color: #333;
 			select.css({'width':'200px'}).appendTo(ctrl);
 			
 			select.bind('change',function(){
+				var id = idPrefix + '_val_' + uniqueIndex;
+				var co = $('#'+ id);
+				co.empty();
+				var cf = getRuleInfo(select.val());
+				console.log(cf);
+				if(cf.vtype == 'checkbox'){
+					$.each(cf.values,function(i,d){
+						//c.append('<option value="' + d.name +'">' + d.text + '</option>');
+						co.append('<input type="checkbox" name="'+ (id+'_v') +'" value="'+ d.name +'"/>' + d.text);
+					});
+					
+				}
+				if(cf.vtype == 'select'){
+					co.append('<select id="'+ (id+'_v') +'"></select>');
+					var c = $('#'+id+'_v');
+					$.each(cf.values,function(i,d){
+						c.append('<option value="' + d.name +'">' + d.text + '</option>');
+					});
+				}
+				/*
 				var id = idPrefix + '_val_' + uniqueIndex + '_val';
 				var selVal = $('#'+ id);
 				selVal.empty();
@@ -181,6 +166,7 @@ color: #333;
 						});
 					}
 				});
+				*/
 			});
 			return ctrl;
 		};
@@ -202,22 +188,44 @@ color: #333;
 			var ctrl = document.createElement('span');
 			$(ctrl).attr({ id: ctrlId, name: ctrlId }).css({'margin-right':'30px'}).appendTo(parent);
 			
-			var select = $('<select>', { id: ctrlId + '_val' });
-			select.css('width', '150px').appendTo(ctrl);
-			
-			//$(ctrl).append('<input type="checkbox" name="a" value="1"/>A');
-			//$(ctrl).append('<input type="checkbox" name="a" value="1"/>B');
-			//$(ctrl).append('<input type="checkbox" name="a" value="1"/>C');
+			//var select = $('<select>', { id: ctrlId + '_val' });
+			//select.css('width', '150px').appendTo(ctrl);
 			return ctrl;
 		};
 		valCol.customGetter = function (idPrefix, name, uniqueIndex) {
+			/*
 			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
 			var rt = $('#' + ctrlId + '_val').val();
+			*/
+			var rt = "";
+			var cf = getRuleInfo($('#'+idPrefix + '_rule_' + uniqueIndex+'_rule').val());
+			var ctrlId = idPrefix + '_val_' + uniqueIndex+'_v';
+			if(cf.vtype == 'checkbox'){
+				$('input[name="'+ ctrlId +'"]:checked').each(function(){
+					rt += $(this).val() + ',';
+				});
+			}
+			if(cf.vtype == 'select'){
+				rt = $('#'+ ctrlId).val();
+			}
 			return rt;
 		};
 		valCol.customSetter = function (idPrefix, name, uniqueIndex, value) {
+			/*
 			var ctrlId = idPrefix + '_' + name + '_' + uniqueIndex;
 			$('#' + ctrlId + '_val').val(value);
+			*/
+			var cf = getRuleInfo($('#'+idPrefix + '_rule_' + uniqueIndex+'_rule').val());
+			var ctrlId = idPrefix + '_val_' + uniqueIndex+'_v';
+			if(cf.vtype == 'checkbox'){
+				var arr = value.split(',');
+				$.each(arr,function(i,d){
+					$('input[name="'+ ctrlId +'"][value="'+d+'"]').attr('checked','true');
+				});
+			}
+			if(cf.vtype == 'select'){
+				$('#'+ ctrlId).val(value);
+			}
 		};
 		
 		//操作列
