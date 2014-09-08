@@ -7,7 +7,7 @@
 <script type="text/javascript" src="./js/jquery-ui-1.10.3.custom.min.js"></script>
 <script type="text/javascript" src="./js/jquery.appendGrid-1.4.1.js"></script>
 <style type="text/css">
-.ui-widget-content {
+.ui-widget-content { 
 border:0;
 background: #eee url(images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x;
 color: #333;
@@ -60,6 +60,7 @@ color: #333;
 			{
 				"name": "taobaoUser",
 				"text": "淘宝用户",
+				"vtype": "checkbox",
 				"values": [
 					{
 						"name": "true",
@@ -203,6 +204,10 @@ color: #333;
 			
 			var select = $('<select>', { id: ctrlId + '_val' });
 			select.css('width', '150px').appendTo(ctrl);
+			
+			//$(ctrl).append('<input type="checkbox" name="a" value="1"/>A');
+			//$(ctrl).append('<input type="checkbox" name="a" value="1"/>B');
+			//$(ctrl).append('<input type="checkbox" name="a" value="1"/>C');
 			return ctrl;
 		};
 		valCol.customGetter = function (idPrefix, name, uniqueIndex) {
@@ -338,6 +343,14 @@ color: #333;
 	}
 	function getCtrlValue(colName, inx){
 		return $('#tblAppendGrid').appendGrid('getCtrlValue', colName, inx);
+	}
+	function getRuleInfo(name){
+		var rules = ruleList.rules;
+		for(var i=0;i<rules.length;i++){
+			if(rules[i].name == name){
+				return rules[i];
+			}
+		}
 	}
 	
 	function getvalue(){
