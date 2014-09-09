@@ -16,6 +16,7 @@ color: #333;
 </style>
 <script type="text/javascript">
 	var cfgData = [{"rule":"mediaType","params":[{"value":"other","percent":"100","target":"0"},{"value":"video","percent":"100","target":{"rule":"taobaoUser","params":[{"value":"true,false,","percent":"100","target":"0"}]}}]}] ;
+	/*
 	var rules = [
 			{
 				"name": "taobaoUser",
@@ -95,10 +96,12 @@ color: #333;
 				]
 			}
 		];
-	
+	*/
+	var rules = [{"name":"taobaoUser","text":"淘宝用户","values":[{"name":"true","text":"是"},{"name":"false","text":"否"}]},{"name":"mediaType","text":"媒体类型","values":[{"name":"video","text":"视频"},{"name":"other","text":"其他"}]},{"name":"allUser","text":"所有用户","values":[{"name":"true","text":"是"}]}];
 	var ruleBuilder;
     $(function () {
-		var targets = { "0": 'H5', "1": '店铺', "2": 'Tanx', "3": '外投外', "_sub": '子规则'};
+		//var targets = { "0": 'H5', "1": '店铺', "2": 'Tanx', "3": '外投外', "_sub": '子规则'};
+		var targets = [{"name":"nativeEcomWall","text":"native电商墙"},{"name":"handleAppWall","text":"小把手应用墙"},{"name":"ecomWebview","text":"H5电商墙"},{"name":"itaobao","text":"H5爱淘宝"},{"name":"tanx","text":"tanx应用"}];
         ruleBuilder = new RuleBuilder({'tableId':'tblAppendGrid',
 		'title':'流量规则',
 		'rules':rules,
@@ -110,14 +113,14 @@ color: #333;
 		ruleBuilder.addRow();
 	}
 	function load(){
-		var c = $('#txtval').text();
+		var c = $('#txtval').val();
 		var json = eval('(' + c + ')');
 		ruleBuilder.load(json);
 	}
 	function getvalue(){
 		var s = ruleBuilder.getvalue();
 		console.log(JSON.stringify(s));
-		$('#txtval').text(JSON.stringify(s));
+		$('#txtval').val(JSON.stringify(s));
 		
 	}
 </script>

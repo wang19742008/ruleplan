@@ -18,14 +18,17 @@
 					}
 				]
 			}]
-		targets: 目标定义 { "0": 'H5', "1": '店铺', "2": 'Tanx', "3": '外投外', "_sub": '子规则'}
+		targets: 目标定义 [{"name":"nativeEcomWall","text":"native电商墙"},{"name":"handleAppWall","text":"小把手应用墙"},{"name":"tanx","text":"tanx应用"}]
 */
 function RuleBuilder(options){
 	var self = this;
 	this.rules = options.rules;
 	this.tableId = options.tableId;
-	this.targets = options.targets;
+	this.targets = {};
 	
+	$.each(options.targets,function(i,d){
+		self.targets[d.name] = d.text;
+	});
 	this.tableObj = $('#' + this.tableId);
 	this.tableObj.appendGrid({
 		caption: options.title || 'test',
@@ -82,7 +85,7 @@ RuleBuilder.prototype.getGridCols = function(){
 				});
 			}
 			if(cf.vtype == 'select'){
-				co.append('<select id="'+ (id+'_v') +'"></select>');
+				co.append('<select id="'+ (id+'_v') +'" style="width:150px"></select>');
 				var c = $('#'+id+'_v');
 				$.each(cf.values,function(i,d){
 					c.append('<option value="' + d.name +'">' + d.text + '</option>');
@@ -272,6 +275,9 @@ RuleBuilder.prototype.getCtrlValue = function (colName, inx){
 RuleBuilder.prototype.getRuleInfo = function (name){
 	for(var i=0;i<this.rules.length;i++){
 		if(this.rules[i].name == name){
+			if(!this.rules[i].vtype){
+				this.rules[i].vtype = 'select';
+			}
 			return this.rules[i];
 		}
 	}
