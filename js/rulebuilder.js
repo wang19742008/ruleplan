@@ -129,6 +129,9 @@ RuleBuilder.prototype.getGridCols = function(){
 			$('input[name="'+ ctrlId +'"]:checked').each(function(){
 				rt += $(this).val() + ',';
 			});
+			if(rt.substring(rt.length-1) == ','){
+				rt = rt.substring(0,rt.length-1);
+			}
 		}
 		if(cf.vtype == 'select'){
 			rt = $('#'+ ctrlId).val();

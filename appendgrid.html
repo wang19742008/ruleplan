@@ -99,18 +99,26 @@ color: #333;
 	var ruleBuilder;
     $(function () {
 		var targets = { "0": 'H5', "1": '店铺', "2": 'Tanx', "3": '外投外', "_sub": '子规则'};
-        ruleBuilder = new RuleBuilder({'tableId':'tblAppendGrid','rules':rules,'targets':targets});
+        ruleBuilder = new RuleBuilder({'tableId':'tblAppendGrid',
+		'title':'流量规则',
+		'rules':rules,
+		'targets':targets
+		});
     });
 	
 	function add(){
 		ruleBuilder.addRow();
 	}
 	function load(){
-		ruleBuilder.load(cfgData);
+		var c = $('#txtval').text();
+		var json = eval('(' + c + ')');
+		ruleBuilder.load(json);
 	}
 	function getvalue(){
 		var s = ruleBuilder.getvalue();
 		console.log(JSON.stringify(s));
+		$('#txtval').text(JSON.stringify(s));
+		
 	}
 </script>
 </head>
@@ -118,6 +126,9 @@ color: #333;
 	<input type='button' value='value' onclick='getvalue()'/>
 	<input type='button' value='add' onclick='add()'/>
 	<input type='button' value='load' onclick='load()'/>
+	<br/>
+	<textarea id="txtval" rows="6" cols="70"></textarea>
     <table id="tblAppendGrid"></table>
+	
 </body>
 </html>
