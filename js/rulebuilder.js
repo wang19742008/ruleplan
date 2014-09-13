@@ -29,6 +29,7 @@ function RuleBuilder(options){
 	$.each(options.targets,function(i,d){
 		self.targets[d.name] = d.text;
 	});
+	self.targets['_sub'] = '子规则';
 	this.tableObj = $('#' + this.tableId);
 	this.tableObj.appendGrid({
 		caption: options.title || 'test',
@@ -55,6 +56,7 @@ RuleBuilder.prototype.addRow = function(){
 	this.setCtrlValue('rid', newInx, this.getUniqueIndex(newInx));
 	this.procRow(newInx);
 }
+
 
 RuleBuilder.prototype.getGridCols = function(){
 	var self = this;
@@ -224,7 +226,7 @@ RuleBuilder.prototype.procRow = function (inx){
 	
 	var preVal = this.getCtrlValue('rule', inx-1);
 	var curVal = this.getCtrlValue('rule', inx);
-	if(preVal && preVal == curVal){
+	if(preVal && preVal == curVal && this.getCtrlValue('prid', inx-1) == this.getCtrlValue('prid', inx)){
 		var ctrlId = 'tblAppendGrid_rule_'+this.getUniqueIndex(inx)+'_rule';
 		$('#' + ctrlId).hide();
 	}

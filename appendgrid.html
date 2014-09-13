@@ -97,18 +97,77 @@ color: #333;
 			}
 		];
 	*/
-	var rules = [{"name":"taobaoUser","text":"淘宝用户","values":[{"name":"true","text":"是"},{"name":"false","text":"否"}]},{"name":"mediaType","text":"媒体类型","values":[{"name":"video","text":"视频"},{"name":"other","text":"其他"}]},{"name":"allUser","text":"所有用户","values":[{"name":"true","text":"是"}]}];
+	var rules = [
+		{"name":"taobaoUser","text":"淘宝用户","values":[
+			{"name":"true","text":"是"},
+			{"name":"false","text":"否"}
+		]},
+		{"name":"mediaType","text":"媒体类型","values":[
+			{"name":"video","text":"视频"},
+			{"name":"other","text":"其他"}
+		]},
+		{"name":"allUser","text":"所有用户","values":[
+			{"name":"true","text":"是"}
+		]}
+		];
+	var dsp = {
+		item:{name:"item",text:"P4P单品"},
+		shop:{name:"shop",text:"P4P店铺"},
+		tanx:{name:"tanx",text:"TANX"},
+		n:{name:"",text:""}
+	};
+	var products = [
+		{name:"nativeEcomWall",text:"native电商墙",layout:[1,2],dsp:[dsp.item,dsp.shop]},
+		{name:"handleAppWall",text:"小把手应用墙",layout:[1,2],dsp:[dsp.item]},
+		{name:"ecomWebview",text:"H5电商墙",layout:[1,2],dsp:[dsp.n]},
+		{name:"itaobao",text:"H5爱淘宝",layout:[1,2],dsp:[dsp.n]},
+		{name:"tanx",text:"tanx应用",layout:[1,2],dsp:[dsp.tanx]}
+	];
+	
 	var ruleBuilder;
     $(function () {
-		//var targets = { "0": 'H5', "1": '店铺', "2": 'Tanx', "3": '外投外', "_sub": '子规则'};
-		var targets = [{"name":"nativeEcomWall","text":"native电商墙"},{"name":"handleAppWall","text":"小把手应用墙"},{"name":"ecomWebview","text":"H5电商墙"},{"name":"itaobao","text":"H5爱淘宝"},{"name":"tanx","text":"tanx应用"}];
-        ruleBuilder = new RuleBuilder({'tableId':'tblAppendGrid',
+		//var targets = [{"name":"nativeEcomWall","text":"native电商墙"},{"name":"handleAppWall","text":"小把手应用墙"},{"name":"ecomWebview","text":"H5电商墙"},{"name":"itaobao","text":"H5爱淘宝"},{"name":"tanx","text":"tanx应用"}];
+        var targets = getTarget(1);
+		ruleBuilder = new RuleBuilder({'tableId':'tblAppendGrid',
 		'title':'流量规则',
 		'rules':rules,
 		'targets':targets
 		});
     });
 	
+	function getTarget(layout){
+		var r = [];
+		$.each(products,function(i,d){
+			if(contains(d.layout,layout)){
+				$.each(d.dsp,function(j,t){
+					var it = {};
+					if(t.name){
+						it.name = d.name + '_' + t.name;
+					}else{
+						it.name = d.name;
+					}
+					
+					if(t.text){
+						it.text = d.text+ '-' +t.text;
+					}else{
+						it.text = d.text;
+					}
+					
+					r.push(it);
+				});
+				
+			}
+		});
+		return r;
+	}
+	function contains(arr, item){
+		for(var i=0;i<arr.length;i++){
+			if(arr[i] == item){
+				return true;
+			}
+		}
+		return false;
+	}
 	function add(){
 		ruleBuilder.addRow();
 	}
@@ -119,7 +178,7 @@ color: #333;
 	}
 	function getvalue(){
 		var s = ruleBuilder.getvalue();
-		console.log(JSON.stringify(s));
+		//console.log(JSON.stringify(s));
 		$('#txtval').val(JSON.stringify(s));
 		
 	}
