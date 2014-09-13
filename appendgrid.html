@@ -113,14 +113,13 @@ color: #333;
 	var dsp = {
 		item:{name:"item",text:"P4P单品"},
 		shop:{name:"shop",text:"P4P店铺"},
-		tanx:{name:"tanx",text:"TANX"},
-		n:{name:"",text:""}
+		tanx:{name:"tanx",text:"TANX"}
 	};
 	var products = [
 		{name:"nativeEcomWall",text:"native电商墙",layout:[1,2],dsp:[dsp.item,dsp.shop]},
 		{name:"handleAppWall",text:"小把手应用墙",layout:[1,2],dsp:[dsp.item]},
-		{name:"ecomWebview",text:"H5电商墙",layout:[1,2],dsp:[dsp.n]},
-		{name:"itaobao",text:"H5爱淘宝",layout:[1,2],dsp:[dsp.n]},
+		{name:"ecomWebview",text:"H5电商墙",layout:[1,2]},
+		{name:"itaobao",text:"H5爱淘宝",layout:[1,2]},
 		{name:"tanx",text:"tanx应用",layout:[1,2],dsp:[dsp.tanx]}
 	];
 	
@@ -138,24 +137,27 @@ color: #333;
 	function getTarget(layout){
 		var r = [];
 		$.each(products,function(i,d){
-			if(contains(d.layout,layout)){
-				$.each(d.dsp,function(j,t){
-					var it = {};
-					if(t.name){
-						it.name = d.name + '_' + t.name;
-					}else{
-						it.name = d.name;
-					}
-					
-					if(t.text){
-						it.text = d.text+ '-' +t.text;
-					}else{
-						it.text = d.text;
-					}
-					
-					r.push(it);
-				});
-				
+			if(!d.layout || contains(d.layout,layout)){
+				if(!d.dsp){
+					r.push({name:d.name,text:d.text});
+				}else{
+					$.each(d.dsp,function(j,t){
+						var it = {};
+						if(t.name){
+							it.name = d.name + '_' + t.name;
+						}else{
+							it.name = d.name;
+						}
+						
+						if(t.text){
+							it.text = d.text+ '-' +t.text;
+						}else{
+							it.text = d.text;
+						}
+						
+						r.push(it);
+					});
+				}
 			}
 		});
 		return r;
