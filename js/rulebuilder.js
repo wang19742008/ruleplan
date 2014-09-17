@@ -80,6 +80,9 @@ RuleBuilder.prototype.getGridCols = function(){
 			var co = $('#'+ id);
 			co.empty();
 			var cf = self.getRuleInfo(select.val());
+			if(!cf){
+				return;
+			}
 			//console.log(cf);
 			if(cf.vtype == 'checkbox'){
 				$.each(cf.values,function(i,d){
@@ -87,7 +90,7 @@ RuleBuilder.prototype.getGridCols = function(){
 				});
 			}
 			if(cf.vtype == 'select'){
-				co.append('<select id="'+ (id+'_v') +'" style="width:150px"></select>');
+				co.append('<select id="'+ (id+'_v') +'"></select>');
 				var c = $('#'+id+'_v');
 				$.each(cf.values,function(i,d){
 					c.append('<option value="' + d.name +'">' + d.text + '</option>');
@@ -149,6 +152,9 @@ RuleBuilder.prototype.getGridCols = function(){
 		$('#' + ctrlId + '_val').val(value);
 		*/
 		var cf = self.getRuleInfo($('#'+idPrefix + '_rule_' + uniqueIndex+'_rule').val());
+		if(!cf){
+			return;
+		}
 		var ctrlId = idPrefix + '_val_' + uniqueIndex+'_v';
 		if(cf.vtype == 'checkbox'){
 			var arr = value.split(',');

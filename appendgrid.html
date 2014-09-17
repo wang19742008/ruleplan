@@ -16,7 +16,7 @@ color: #333;
 </style>
 <script type="text/javascript">
 	var cfgData = [{"rule":"mediaType","params":[{"value":"other","percent":"100","target":"0"},{"value":"video","percent":"100","target":{"rule":"taobaoUser","params":[{"value":"true,false,","percent":"100","target":"0"}]}}]}] ;
-	/*
+	
 	var rules = [
 			{
 				"name": "taobaoUser",
@@ -96,7 +96,7 @@ color: #333;
 				]
 			}
 		];
-	*/
+	/*
 	var rules = [
 		{"name":"taobaoUser","text":"淘宝用户","values":[
 			{"name":"true","text":"是"},
@@ -110,6 +110,7 @@ color: #333;
 			{"name":"true","text":"是"}
 		]}
 		];
+		*/
 	var dsp = {
 		item:{name:"item",text:"P4P单品"},
 		shop:{name:"shop",text:"P4P店铺"},
@@ -121,6 +122,11 @@ color: #333;
 		{name:"ecomWebview",text:"H5电商墙",layout:[1,2]},
 		{name:"itaobao",text:"H5爱淘宝",layout:[1,2]},
 		{name:"tanx",text:"tanx应用",layout:[1,2],dsp:[dsp.tanx]}
+	];
+	
+	var targets = [
+		{"name":"nativeEcomWall_item","text":"native电商墙-单品",layout:[1,2]},
+		{"name":"handleAppWall_app","text":"小把手应用墙-xx",layout:[1,2]}
 	];
 	
 	var ruleBuilder;
