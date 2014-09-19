@@ -234,7 +234,8 @@ RuleBuilder.prototype.procRow = function (inx){
 	var curVal = this.getCtrlValue('rule', inx);
 	if(preVal && preVal == curVal && this.getCtrlValue('prid', inx-1) == this.getCtrlValue('prid', inx)){
 		var ctrlId = 'tblAppendGrid_rule_'+this.getUniqueIndex(inx)+'_rule';
-		$('#' + ctrlId).hide();
+		//$('#' + ctrlId).hide();
+		$('#' + ctrlId).attr("disabled","disabled");
 	}
 }
 
